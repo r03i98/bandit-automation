@@ -47,12 +47,9 @@ class AutoBandit:
             for result in results:
                 file_dependencies = {'file_dependencies':[]}
                 filepath = result['filename']
-                filename = filepath.rsplit('/', 1)[-1]
-                foo = SourceFileLoader(filename, filepath)
                 node_iter = ast.NodeVisitor()
                 node_iter.visit_Import = self.visit_Import
                 node_iter.visit_ImportFrom = self.visit_ImportFrom
-
                 with open(filepath) as f:
                     node_iter.visit(ast.parse(f.read()))
                 for dependency in self.modules:
@@ -60,7 +57,6 @@ class AutoBandit:
                 result.update(file_dependencies)
                 with open('results.json', "w") as file:
                     json.dump(data, file, indent=4)
-
 
 if __name__ == "__main__":
     myclass = AutoBandit()
