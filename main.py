@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import json
 import argparse
@@ -9,16 +10,22 @@ class AutoBandit:
     def bandit_command(self):
         os.system('bandit --quiet -f json -r vuln_apps/ -o results.json')
 
-    def manual_pt(self):
-
-    def json_manipulte(self):
-        f = open('results.json')
-        data = json.load(f)
+    def manual_pt(self, testid, manual_test_reult):
+        with open('results.json', "r") as file:
+            data = json.load(file)
+            manual_pt_object = {'manaul_pt_valid':manual_test_reult}
+            for i in data['results']:
+                if testid in str(i['test_id']):
+                    i.update(manual_pt_object)
+        with open('results.json', "w") as file:
+            json.dump(data, file, indent=4)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--pt', type=int, help='Listen port. Default: 4000', default=4000)
-    args = parser.parse_args()
-
     myclass = AutoBandit()
     myclass.bandit_command()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--testid', type=str, help='chose a test id and add data to')
+    parser.add_argument('--pt', type=str, help='define if a vuln is valid after manual test (yes/no)')
+    args = parser.parse_args()
+    if args.testid:
+        myclass.manual_pt(args.testid,args.pt)
