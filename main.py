@@ -2,7 +2,6 @@
 import os
 import json
 import argparse
-from importlib.machinery import SourceFileLoader
 import ast
 
 # This script automate bandit SAST tool on given python apps.
@@ -18,13 +17,13 @@ class AutoBandit:
         # This command just preform the bandit scan command directly from the os. (NOT SECURE AND MUST BE CHANGED! its a pilot only)
         os.system('bandit --quiet -f json -r vuln_apps/ -o results.json')
 
-    def manual_pt(self, testid, manual_test_reult):
+    def manual_pt(self, filename,line_number, manual_test_reult):
         # This function add to a finding if a manual pt test is valid or not.
         with open('results.json', "r") as file:
             data = json.load(file)
             manual_pt_object = {'manaul_pt_valid':manual_test_reult}
             for i in data['results']:
-                if testid in str(i['test_id']):
+                if filename in str(i['filename']) and line_number in str(i['line_number']):
                     i.update(manual_pt_object)
         with open('results.json', "w") as file:
             json.dump(data, file, indent=4)
@@ -96,11 +95,12 @@ if __name__ == "__main__":
     myclass = AutoBandit()
     parser = argparse.ArgumentParser()
     parser.add_argument('--validate',action='store_true', help='Use this option to add manual pt validate to a finding')
-    parser.add_argument('--testid', type=str, help='chose a test id and add data to')
+    parser.add_argument('--filename', type=str, help='chose a file to validate manual pt')
+    parser.add_argument('--line_number', type=str, help='specify the vulnerable line')
     parser.add_argument('--pt', type=str, help='define if a vuln is valid after manual test (yes/no)')
     args = parser.parse_args()
     if args.validate:
-        myclass.manual_pt(args.testid,args.pt)
+        myclass.manual_pt(args.filename,args.line_number,args.pt)
     else:
         myclass.bandit_command()
         myclass.added_value()
