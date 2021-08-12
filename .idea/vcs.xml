@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vuln_apps/Vulnerable-Flask-App" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vuln_apps/dvpwa" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vuln_apps/flask-vuln" vcs="Git" />
   </component>
 </project>
