@@ -39,12 +39,43 @@ class AutoBandit:
         if node.module is not None and node.level == 0:
             self.modules.add(node.module.split(".")[0])
 
+    def show_info(self, functionNode):
+        # This function outputs functions an args of functions to json
+        functions_json = {"Function name": functionNode.name,
+                          "Args": []}
+
+        for arg in functionNode.args.args:
+            functions_json['Args'].append(arg.arg)
+        return functions_json
+
+    def classes_functions_extract(self, f):
+        # this function extract all classes methods and functions from a specifiec file
+        myjson = {"classes": [],
+                  "functions": []}
+        filename = f
+        with open(filename) as file:
+            node = ast.parse(file.read())
+
+        functions = [n for n in node.body if isinstance(n, ast.FunctionDef)]
+        classes = [n for n in node.body if isinstance(n, ast.ClassDef)]
+        for class_ in classes:
+            tmpjson = {"class_name": class_.name,
+                       "methods": []}
+            methods = [n for n in class_.body if isinstance(n, ast.FunctionDef)]
+            for method in methods:
+                tmpjson["methods"].append(self.show_info(method))
+            myjson["classes"].append(tmpjson)
+        for function in functions:
+            myjson["functions"].append(self.show_info(function))
+        return myjson
+
     def added_value(self):
-        # this function is adding each findings dependencies in related code and  TODO: add also functions from the file
+        # this function is adding each findings dependencies, classes, methods, and functions in related code file
         with open('results.json', "r") as file:
             data = json.load(file)
             results = data['results']
             for result in results:
+                # This part add all dependecies
                 file_dependencies = {'file_dependencies':[]}
                 filepath = result['filename']
                 node_iter = ast.NodeVisitor()
@@ -55,12 +86,14 @@ class AutoBandit:
                 for dependency in self.modules:
                     file_dependencies['file_dependencies'].append(dependency)
                 result.update(file_dependencies)
+                # this part add all classes methods and functions
+                result.update(self.classes_functions_extract(filepath))
                 with open('results.json', "w") as file:
                     json.dump(data, file, indent=4)
 
+
 if __name__ == "__main__":
     myclass = AutoBandit()
-    myclass.bandit_command()
     parser = argparse.ArgumentParser()
     parser.add_argument('--validate',action='store_true', help='Use this option to add manual pt validate to a finding')
     parser.add_argument('--testid', type=str, help='chose a test id and add data to')
@@ -68,4 +101,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.validate:
         myclass.manual_pt(args.testid,args.pt)
-    myclass.added_value()
+    else:
+        myclass.bandit_command()
+        myclass.added_value()
