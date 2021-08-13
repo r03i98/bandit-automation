@@ -23,7 +23,6 @@ Each finding is appended with the following information:
     ```
     python3 main.py
     ```
- if you want to add to a specid
  
  ### Manual PT results
  1. Run the app with the following flags
