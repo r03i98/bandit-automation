@@ -2,9 +2,10 @@
 
 This script automate a bandit SAST scan on a given python web app (or multiple.) and also enrich the scan and give more insight on each finding.
 Each finding is appended with the following information:
-* the related py file dependencies
-* the related py file classes, methods, and functions.
+* The related py file dependencies
+* The related py file classes, methods, and functions.
 * The user can add with the cli manual pt results (valid or not)
+* All the results are stored in json for future manipulation.
 
 # Requriements
 
