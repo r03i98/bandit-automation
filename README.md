@@ -18,7 +18,7 @@ Each finding is appended with the following information:
 
 ### Basic run
 
-1. First of all you need to place the testing app inside the vuln_apps folder.
+1. First of all you need to place the app you desire to test inside the vuln_apps folder.
 2. simpley run the script with
     ```
     python3 main.py
